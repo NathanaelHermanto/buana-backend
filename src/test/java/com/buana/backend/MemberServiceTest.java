@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class MemberServiceTest {
 
@@ -115,6 +116,36 @@ public class MemberServiceTest {
 
         // Check if save was never called
         verify(memberRepository, never()).save(any(Member.class));
+    }
+
+    @Test
+    public void testFindById_ExistingMember() {
+        // Arrange
+        Member member = new Member(1L, "Peter Parker", "Developer");
+
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+
+        // Act
+        Member foundMember = memberService.findMemberById(1L);
+
+        // Assert
+        assertNotNull(foundMember);
+        assertEquals("Peter Parker", foundMember.getName());
+        assertEquals("Developer", foundMember.getPosition());
+        verify(memberRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    public void testFindById_NonExistingMember() {
+        // Arrange
+        when(memberRepository.findById(2L)).thenReturn(Optional.empty());
+
+        // Act
+        Member foundMember = memberService.findMemberById(2L);
+
+        // Assert
+        assertNull(foundMember);
+        verify(memberRepository, times(1)).findById(2L);
     }
 }
 
