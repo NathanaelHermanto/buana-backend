@@ -45,4 +45,12 @@ public class MemberService {
 
         return memberRepository.save(member);
     }
+
+    public Member findMemberById(Long id) {
+        if (id == null) {
+            throw new BadRequestException("Member id cannot be null");
+        }
+
+        return memberRepository.findById(id).orElse(null);
+    }
 }
